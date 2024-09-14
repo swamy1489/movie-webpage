@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Info Finder</title>
+    <style>
+        /* General body styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Main container for the movie search interface */
+        .container {
+            background-color: #ffffff;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            transition: background-color 0.5s ease;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Input and button styles */
+        form input {
+            padding: 14px 18px;
+            font-size: 18px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            width: 70%;
+            margin-right: 8px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        form input:focus {
+            border-color: #e74c3c;
+            outline: none;
+        }
+
+        form button {
+            padding: 14px 25px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        form button:hover {
+            background-color: #e74c3c;
+            transform: translateY(-2px);
+        }
+
+        /* Movie details section */
+        #movieDetails {
+            margin-top: 30px;
+            text-align: left;
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        #movieDetails h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #34495e;
+        }
+
+        #movieDetails p {
+            margin: 8px 0;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        .movie-poster {
+            max-width: 160px;
+            float: left;
+            margin-right: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .movie-info {
+            overflow: hidden;
+        }
+
+        /* Animation for the container */
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            form input, form button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .movie-poster {
+                max-width: 100%;
+                margin: 0 0 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Find Movie Details</h1>
+        <form id="movieForm">
+            <input type="text" id="movieName" placeholder="Enter movie name" required>
+            <button type="submit">Search</button>
+        </form>
+
+        <div id="movieDetails"></div>
+    </div>
+
+    <script>
+        const apiKey = '55c60744';
+    
+        document.getElementById('movieForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form from submitting traditionally
+    
+            const movieName = document.getElementById('movieName').value;
+            const url = `http://www.omdbapi.com/?t=${encodeURIComponent(movieName)}&apikey=${apiKey}`;
+    
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.Response === "True") {
+                        displayMovieDetails(data);
+                    } else {
+                        document.getElementById('movieDetails').innerHTML = `<p>Movie not found!</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('movieDetails').innerHTML = `<p>There was an error fetching the movie details.</p>`;
+                });
+        });
+    
+        function displayMovieDetails(movie) {
+            document.getElementById('movieDetails').innerHTML = `
+                <div class="movie-info">
+                    <img class="movie-poster" src="${movie.Poster}" alt="${movie.Title} Poster">
+                    <div>
+                        <h2>${movie.Title} (${movie.Year})</h2>
+                        <p><strong>Genre:</strong> ${movie.Genre}</p>
+                        <p><strong>Director:</strong> ${movie.Director}</p>
+                        <p><strong>Actors:</strong> ${movie.Actors}</p>
+                        <p><strong>Plot:</strong> ${movie.Plot}</p>
+                        <p><strong>IMDb Rating:</strong> ${movie.imdbRating}</p>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+    
+</body>
+</html>
